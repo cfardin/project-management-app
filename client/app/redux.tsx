@@ -1,4 +1,5 @@
-import { useRef } from "react";
+"use client"
+import { useEffect, useRef, useState } from "react";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
   TypedUseSelectorHook,
@@ -75,23 +76,49 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 /* PROVIDER */
-export default function StoreProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const storeRef = useRef<AppStore>();
+// export default function StoreProvider({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   const storeRef = useRef<AppStore>();
+//   if (!storeRef.current) {
+//     storeRef.current = makeStore();
+//     setupListeners(storeRef.current.dispatch);
+//   }
+//   const persistor = persistStore(storeRef.current);
+
+//   return (
+//     <Provider store={storeRef.current}>
+//       <PersistGate loading={null} persistor={persistor}>
+//         {children}
+//       </PersistGate>
+//     </Provider>
+//   );
+// }
+
+export default function StoreProvider({ children }: { children: React.ReactNode }) {
+  const storeRef = useRef<AppStore | null>(null);
+  const [persistor, setPersistor] = useState<ReturnType<typeof persistStore> | null>(null);
+
   if (!storeRef.current) {
     storeRef.current = makeStore();
     setupListeners(storeRef.current.dispatch);
   }
-  const persistor = persistStore(storeRef.current);
+
+  useEffect(() => {
+    setPersistor(persistStore(storeRef.current!));
+  }, []);
 
   return (
     <Provider store={storeRef.current}>
-      <PersistGate loading={null} persistor={persistor}>
-        {children}
-      </PersistGate>
+      {persistor ? (
+        <PersistGate loading={null} persistor={persistor}>
+          {children}
+        </PersistGate>
+      ) : (
+        children
+      )}
     </Provider>
   );
 }

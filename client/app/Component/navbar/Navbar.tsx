@@ -1,12 +1,30 @@
-import { Search, Settings } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/app/redux";
+import { setIsDarkMode, setIsSidebarCollapsed } from "@/state";
+import { Menu, Moon, Search, Settings, Sun } from "lucide-react";
 import Link from "next/link";
 
+
 const Navbar = () => {
+    const dispatch = useAppDispatch();
+    const isSidebarCollapsed = useAppSelector(
+        (state) => state.global.isSidebarCollapsed,
+    );
+    const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+
+
     return (
         <div className="flex items-center justify-between bg-white px-4 py-3 dark:bg-black dark:px-4 dark:py-3">
             {/* searchbar */}
-
             <div className="flex items-center gap-8">
+                {!isSidebarCollapsed ? null : (
+                    <button
+                        onClick={() =>
+                            dispatch(setIsSidebarCollapsed(!isSidebarCollapsed))
+                        }
+                    >
+                        <Menu className="text-black h-8 w-8 dark:text-white"></Menu>
+                    </button>
+                )}
                 {/* sidebar button (will be added later, lol) */}
                 <div className="relative flex h-min w-48">
                     <Search className="absolute left-1 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer dark:text-white"></Search>
@@ -20,21 +38,29 @@ const Navbar = () => {
 
             {/* right side */}
             <div className="flex items-center ">
-                {/* <button
-                    onClick={toggleDark}
-                    className="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                <button
+                    onClick={() => dispatch(setIsDarkMode(!isDarkMode))}
+                    className={
+                        isDarkMode
+                            ? `rounded p-2 dark:hover:bg-gray-700`
+                            : `rounded p-2 hover:bg-gray-100`
+                    }
                 >
                     {isDarkMode ? (
-                        <Sun className="h-6 w-6 dark:text-white" />
+                        <Sun className="h-6 w-6 cursor-pointer text-black dark:text-white" />
                     ) : (
-                        <Moon className="h-6 w-6 dark:text-white" />
+                        <Moon className="h-6 w-6 cursor-pointer text-black dark:text-white" />
                     )}
-                </button> */}
+                </button>
                 <Link
-                  href="/settings"
-                  className="h-min w-min rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    href="/settings"
+                    className={
+                        isDarkMode
+                            ? "h-min w-min rounded p-2 dark:hover:bg-gray-700"
+                            : "h-min w-min rounded p-2 hover:bg-gray-100"
+                    }
                 >
-                  <Settings className="h-6 w-6 text-black dark:text-white" />
+                    <Settings className="h-6 w-6 text-black dark:text-white" />
                 </Link>
                 <div className="ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block"></div>
             </div>
@@ -96,7 +122,7 @@ export default Navbar;
 //         >
 //           <Settings className="h-6 w-6 dark:text-white" />
 //         </Link>
-        // <div className="ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block"></div>
+// <div className="ml-2 mr-5 hidden min-h-[2em] w-[0.1rem] bg-gray-200 md:inline-block"></div>
 //         <div className="hidden items-center md:flex">
 //           <User className="h-9 w-9 rounded-full dark:text-white" />
 //           <span className="mx-3 text-gray-800 dark:text-white">Username</span>
