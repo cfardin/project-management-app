@@ -1,21 +1,40 @@
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 const prisma = new PrismaClient();
 
-async function deleteAllData(orderedFileNames: string[]) {
-  const modelNames = orderedFileNames.map((fileName) => {
-    const modelName = path.basename(fileName, path.extname(fileName));
-    return modelName.charAt(0).toUpperCase() + modelName.slice(1);
-  });
+// async function deleteAllData(orderedFileNames: string[]) {
+//   const modelNames = orderedFileNames.map((fileName) => {
+//     const modelName = path.basename(fileName, path.extname(fileName));
+//     return modelName.charAt(0).toUpperCase() + modelName.slice(1);
+//   });
 
-  for (const modelName of modelNames) {
-    const model: any = prisma[modelName as keyof typeof prisma];
+//   for (const modelName of modelNames) {
+//     const model: any = prisma[modelName as keyof typeof prisma];
+//     try {
+//       await model.deleteMany({});
+//       console.log(`Cleared data from ${modelName}`);
+//     } catch (error) {
+//       console.error(`Error clearing data from ${modelName}:`, error);
+//     }
+//   }
+// }
+
+async function deleteAllData(orderedFileNames: string[]) {
+  const modelNames = orderedFileNames.map((fileName) =>
+    path.basename(fileName, path.extname(fileName))
+  );
+
+  for (const name of modelNames) {
+    const table = name.charAt(0).toUpperCase() + name.slice(1);
     try {
-      await model.deleteMany({});
-      console.log(`Cleared data from ${modelName}`);
+      await prisma.$executeRawUnsafe(
+        `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE;`
+      );
+      console.log(`Cleared data from ${table}`);
     } catch (error) {
-      console.error(`Error clearing data from ${modelName}:`, error);
+      console.error(`Error clearing data from ${table}:`, error);
     }
   }
 }
@@ -34,7 +53,8 @@ async function main() {
     "taskAssignment.json",
   ];
 
-  await deleteAllData(orderedFileNames);
+  // await deleteAllData(orderedFileNames);
+  await deleteAllData([...orderedFileNames].reverse());
 
   for (const fileName of orderedFileNames) {
     const filePath = path.join(dataDirectory, fileName);
