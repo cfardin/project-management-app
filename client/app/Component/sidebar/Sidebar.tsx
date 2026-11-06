@@ -44,7 +44,7 @@ const Sidebar = () => {
                 {/* top logo */}
                 <div className="z-50 flex min-h-14 w-64 items-center justify-between bg-white px-6 pt-3 dark:bg-black">
                     <div className="text-xl font-bold text-gray-800 dark:text-white">
-                        MyProjects
+                        PostProject
                     </div>
                     {isSidebarCollapsed ? null : (
                         <button
