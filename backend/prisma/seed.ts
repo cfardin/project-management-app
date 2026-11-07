@@ -71,6 +71,15 @@ async function main() {
       console.error(`Error seeding data for ${modelName}:`, error);
     }
   }
+
+  for (const fileName of orderedFileNames) {
+  const name = path.basename(fileName, path.extname(fileName));
+  const table = name.charAt(0).toUpperCase() + name.slice(1);
+  const pk = table === "User" ? "userId" : "id";
+  await prisma.$executeRawUnsafe(
+    `SELECT setval(pg_get_serial_sequence('"${table}"', '${pk}'), coalesce(max("${pk}"), 1)) FROM "${table}";`
+  );
+}
 }
 
 main()
