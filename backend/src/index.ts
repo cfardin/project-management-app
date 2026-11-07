@@ -5,7 +5,10 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 
+
 // routers imports 
+import projectRoutes from "./routes/projectRoutes";
+
 
 
 // configarations 
@@ -19,15 +22,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : false }));
 app.use(cors());
 
+
+
+
+
 // routes 
 app.get("/", (req, res) => {
     res.send("backend is running")
 });
 
 
+app.use("/projects", projectRoutes);
+
+
+
+
 // server 
 const port = process.env.PORT || 5000; 
-
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
