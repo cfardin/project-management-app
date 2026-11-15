@@ -1,8 +1,14 @@
 "use client"
 import { useEffect } from "react";
 import Navbar from "./Component/navbar/Navbar";
-import Sidebar from "./Component/sidebar/Sidebar";
+// import Sidebar from "./Component/sidebar/Sidebar";
 import StoreProvider, { useAppSelector } from "./redux";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+
+const Sidebar = dynamic(() => import("@/app/Component/sidebar/Sidebar"), {
+  ssr: false,
+});
 
 
 
@@ -22,7 +28,10 @@ const DashboardLayout = ( {children} : {children : React.ReactNode} ) => {
     return (
         <div className="flex min-h-screen w-full bg-gray-50 ">
             {/* sidebar */}
-            <Sidebar></Sidebar>
+            <Suspense>
+                <Sidebar></Sidebar>
+            </Suspense>
+            
             <main className={`flex w-full flex-col bg-gray-50 dark:bg-dark-bg ${isSidebarCollapsed ? "" : "md:pl-64"} `}>
                 {/* navbar */}
                 <Navbar></Navbar>
